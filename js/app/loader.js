@@ -1,7 +1,8 @@
 function loadCamera(data) {
+  camera = {};
   var a;
   a = data[0].split(' ');
-  var c = new Ponto(a[0], a[1], a[2]);
+  var c = new Ponto3D(a[0], a[1], a[2]);
   a = data[1].split(' ');
   var n = new Vetor(a[0], a[1], a[2]);
   a = data[2].split(' ');
@@ -11,17 +12,16 @@ function loadCamera(data) {
   var hx = a[1];
   var hy = a[2];
   camera = new Camera(c, n, v, d, hx, hy);
-  // console.log(camera);
-  if(!camera.alfa.length) {
-    camera.genAlfa();
-    console.log(camera.alfa);
-  }
+  console.log("Camera");
+  console.log(camera);
+  camera.genAlfa();
 }
 
 function loadIluminacao(data) {
+  iluminacao = {};
   var a;
   a = data[0].split(' ');
-  var pl = new Ponto(a[0], a[1], a[2]);
+  var pl = new Ponto3D(a[0], a[1], a[2]);
   var ka = data[1];
   var a = data[2].split(' ');
   var ia = new Vetor(a[0], a[1], a[2]);
@@ -33,9 +33,9 @@ function loadIluminacao(data) {
   var il = new Cor(a[0], a[1], a[2]);
   var n = data[7];
   iluminacao = new Iluminacao(pl, ka, ia, kd, od, ks, il, n);
+  console.log("Iluminacao");
   console.log(iluminacao);
-  iluminacao.getPlVista(camera);
-  console.log(iluminacao);
+  iluminacao.pl.getPontoVista(camera);
 }
 
 function loadObjeto(data) {
@@ -48,18 +48,25 @@ function loadObjeto(data) {
   var i;
   for (i = 1; i <= qntP; ++i) {
     a = data[i].split(' ');
-    var p = new Ponto(a[0], a[1], a[2]);
+    var p = new Ponto3D(a[0], a[1], a[2]);
+    p.getPontoVista(camera);
     pontos.push(p);
   }
   for(var j = 0; j < qntT; ++j, ++i) {
     a = data[i].split(' ');
     var t = new Triangulo(pontos[a[0]-1], pontos[a[1]-1], pontos[a[2]-1]);
+    t.calcularNormal();
     triangulos.push(t);
   }
   objeto = new Objeto(triangulos);
+  console.log("Objeto");
+  console.log(objeto);
+  // for(var a = 0; a < pontos.length ; ++a) {
+  //   var p = pontos[a].getPonto2D(camera);
+  //   ctx.fillRect(p.x,p.y,1,1);
+  // }
   // console.log(pontos);
   // console.log(triangulos);
-  // console.log(objeto);
 }
 
 function handleFileSelect(evt) {
