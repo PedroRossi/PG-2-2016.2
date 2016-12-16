@@ -120,3 +120,18 @@ function Iluminacao(pl, ka, ia, kd, od, ks, il, n) {
   this.il = il;
   this.n = n;
 }
+Iluminacao.prototype.calcularCor = function(vec_V, vec_N, vec_L) {
+  var l = this.ia*this.ka;
+  vec_N.normalizar();
+  vec_L.normalizar();
+  var pe_nl = vec_N.produtoEscalar(vec_L);
+  var R = 2*this.n*(pe_nl) - vec_L;
+  l += this.od*this.il*this.kd*pe_nl;
+  var pe_rv = R.produtoEscalar(vec_V);
+  for (var i = 0; i < this.n; i++) {
+    pe_rv *= pe_rv;
+  }
+  l += this.ks*pe_rv*this.il;
+  return l;
+}
+
