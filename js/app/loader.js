@@ -33,7 +33,9 @@ function loadIluminacao(data) {
   var il = new Cor(a[0], a[1], a[2]);
   var n = data[7];
   iluminacao = new Iluminacao(pl, ka, ia, kd, od, ks, il, n);
-  // console.log(iluminacao);
+  console.log(iluminacao);
+  iluminacao.getPlVista(camera);
+  console.log(iluminacao);
 }
 
 function loadObjeto(data) {

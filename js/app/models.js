@@ -41,9 +41,19 @@ function Ponto(x, y, z) {
   this.y = y;
   this.z = z;
 }
+Ponto.prototype.sub = function(p) {
+  return new Ponto(this.x - p.x, this.y - p.y, this.z - p.z)
+};
 Ponto.prototype.add = function(p) {
   return new Point(this.x + p.x, this.y + p.y, this.z + p.z)
 };
+Ponto.prototype.multiplicarMatrix = function(matrix) {
+  var x = this.x*matrix[0][0] + this.y*matrix[0][1] + this.z*matrix[0][2];
+  var y = this.x*matrix[1][0] + this.y*matrix[1][1] + this.z*matrix[1][2];
+  var z = this.x*matrix[2][0] + this.y*matrix[2][1] + this.z*matrix[2][2];
+  return new Ponto(x, y, z);
+};
+
 
 function Triangulo(p1, p2, p3) {
   this.p1 = p1;
@@ -90,6 +100,7 @@ function Iluminacao(pl, ka, ia, kd, od, ks, il, n) {
   this.il = il;
   this.n = n;
 }
-Iluminacao.prototype.getPlVista = function(alfa) {
-  this.pl.x = this.pl.x;
+Iluminacao.prototype.getPlVista = function(camera) {
+  this.pl = this.pl.sub(camera.c);
+  this.pl = this.pl.multiplicarMatrix(camera.alfa);
 };
