@@ -85,6 +85,30 @@ function Triangulo(p1, p2, p3) {
   this.p3 = p3;
   this.normal = new Vetor(0, 0, 0);
 }
+Triangulo.prototype.ordenar = function () {
+  var p1 = this.p1;
+  var p2 = this.p2;
+  var p3 = this.p3;
+  if(this.p1.y > this.p2.y && this.p1.y > this.p3.y) {
+    if(this.p2.y > this.p3.y) {
+      this.p1 = p3;
+      this.p2 = p2;
+      this.p3 = p1;
+    } else {
+      this.p1 = p2;
+      this.p2 = p3;
+      this.p3 = p1;
+    }
+  } else if(this.p1.y > this.p3.y) {
+    this.p1 = p3;
+    this.p2 = p1;
+    this.p3 = p2;
+  } else if(this.p2.y > this.p3.y) {
+    this.p1 = p1;
+    this.p2 = p3;
+    this.p3 = p2;
+  }
+};
 Triangulo.prototype.calcularNormal = function() {
   var v2v1 = new Vetor(this.p2.x - this.p1.x, this.p2.y - this.p1.y, this.p2.z - this.p1.z);
   var v3v1 = new Vetor(this.p3.x - this.p1.x, this.p3.y - this.p1.y, this.p3.z - this.p1.z);
@@ -102,6 +126,21 @@ Triangulo.prototype.rasterizacao = function () {
   ctx.fillRect(this.p1.x,this.p1.y,1,1);
   ctx.fillRect(this.p2.x,this.p2.y,1,1);
   ctx.fillRect(this.p3.x,this.p3.y,1,1);
+
+  /* at first sort the three vertices by y-coordinate ascending so v1 is the topmost vertice */
+  this.ordenar();
+  /* here we know that v1.y <= v2.y <= v3.y */
+  /* check for trivial case of bottom-flat triangle */
+  if (this.p2.y == this.p3.y) desenharTrianguloSuperior(this.p1, this.p2, this.p3);
+  /* check for trivial case of top-flat triangle */
+  else if (this.p1.y == this.p2.y) desenharTrianguloInferior(this.p1, this.p2, this.p3);
+  else {
+    /* general case - split the triangle in a topflat and bottom-flat one */
+    var p4 = new Ponto2D((this.p1.x + ((this.p2.y-this.p1.y)/(this.p3.y-this.p1.y)) * (this.p3.x-this.p1.x)),this.p2.y);
+    desenharTrianguloSuperior(this.p1, this.p2, p4);
+    desenharTrianguloInferior(this.p2, p4, this.p3);
+  }
+
 };
 
 function Camera(c, n, v, d, hx, hy) {
