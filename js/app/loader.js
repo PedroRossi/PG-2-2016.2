@@ -12,8 +12,7 @@ function loadCamera(data) {
   var hx = a[1];
   var hy = a[2];
   camera = new Camera(c, n, v, d, hx, hy);
-  console.log("Camera");
-  console.log(camera);
+  // console.log("Camera");console.log(camera);
   camera.genAlfa();
 }
 
@@ -33,14 +32,16 @@ function loadIluminacao(data) {
   var il = new Cor(a[0], a[1], a[2]);
   var n = data[7];
   iluminacao = new Iluminacao(pl, ka, ia, kd, od, ks, il, n);
-  console.log("Iluminacao");
-  console.log(iluminacao);
+  // console.log("Iluminacao");console.log(iluminacao);
   iluminacao.pl.getPontoVista(camera);
 }
 
 function loadObjeto(data) {
-  var pontos = [];
-  var triangulos = [];
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  var pontos3D = [];
+  var pontos2D = [];
+  var triangulos3D = [];
+  var triangulos2D = [];
   var a;
   a = data[0].split(' ');
   var qntP = a[0];
@@ -50,23 +51,42 @@ function loadObjeto(data) {
     a = data[i].split(' ');
     var p = new Ponto3D(a[0], a[1], a[2]);
     p.getPontoVista(camera);
-    pontos.push(p);
+    pontos3D.push(p);
   }
   for(var j = 0; j < qntT; ++j, ++i) {
     a = data[i].split(' ');
-    var t = new Triangulo(pontos[a[0]-1], pontos[a[1]-1], pontos[a[2]-1]);
+    var t = new Triangulo(pontos3D[a[0]-1], pontos3D[a[1]-1], pontos3D[a[2]-1]);
     t.calcularNormal();
-    triangulos.push(t);
+    var normal = t.normal;
+    pontos3D[a[0]-1].normal = pontos3D[a[0]-1].normal.add(normal);
+    pontos3D[a[1]-1].normal = pontos3D[a[1]-1].normal.add(normal);
+    pontos3D[a[2]-1].normal = pontos3D[a[2]-1].normal.add(normal);
   }
-  objeto = new Objeto(triangulos);
-  console.log("Objeto");
-  console.log(objeto);
-  // for(var a = 0; a < pontos.length ; ++a) {
-  //   var p = pontos[a].getPonto2D(camera);
-  //   ctx.fillRect(p.x,p.y,1,1);
-  // }
-  // console.log(pontos);
-  // console.log(triangulos);
+  for (var a = 0; a < pontos3D.length; a++) {
+    pontos3D[a].normal.normalizar();
+    pontos2D[a] = pontos3D[a].getPontoTela(camera);
+  }
+  i-=qntT;
+  for(var j = 0; j < qntT; ++j, ++i) {
+    a = data[i].split(' ');
+    var t = new Triangulo(pontos3D[a[0]-1], pontos3D[a[1]-1], pontos3D[a[2]-1]);
+    triangulos3D.push(t);
+    t = new Triangulo(pontos2D[a[0]-1], pontos2D[a[1]-1], pontos2D[a[2]-1]);
+    triangulos2D.push(t);
+  }
+  objeto3D = new Objeto(triangulos3D);
+  objeto2D = new Objeto(triangulos2D);
+  // objeto3D.desenhar();
+  objeto2D.desenhar();
+  // console.log("Objeto");console.log(objeto3D);console.log(objeto2D);
+  // console.log(pontos3D);
+  // console.log(pontos2D);
+  // console.log(triangulos3D);
+  // console.log(triangulos2D);
+}
+
+function loadPlano(data) {
+  console.log(data);
 }
 
 function handleFileSelect(evt) {
@@ -80,6 +100,9 @@ function handleFileSelect(evt) {
     break;
     case 'iluminacao':
       next = loadIluminacao;
+    break;
+    case 'plano':
+      next = loadPlano;
     break;
   }
   var file = evt.target.files[0]; // FileList object
