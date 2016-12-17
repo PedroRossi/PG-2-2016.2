@@ -40,8 +40,6 @@ function loadObjeto(data) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   var pontos3D = [];
   var pontos2D = [];
-  var triangulos3D = [];
-  var triangulos2D = [];
   var a;
   a = data[0].split(' ');
   var qntP = a[0];
@@ -74,10 +72,11 @@ function loadObjeto(data) {
     t = new Triangulo(pontos2D[a[0]-1], pontos2D[a[1]-1], pontos2D[a[2]-1]);
     triangulos2D.push(t);
   }
-  objeto3D = new Objeto(triangulos3D);
-  objeto2D = new Objeto(triangulos2D);
+  desenharObjeto();
+  // objeto3D = new Objeto(triangulos3D);
+  // objeto2D = new Objeto(triangulos2D);
   // objeto3D.desenhar();
-  objeto2D.desenhar();
+  // objeto2D.desenhar();
   // console.log("Objeto");console.log(objeto3D);console.log(objeto2D);
   // console.log(pontos3D);
   // console.log(pontos2D);

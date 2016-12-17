@@ -8,6 +8,9 @@ Vetor.prototype.normalizar = function() {
   this.x/=normal;
   this.y/=normal;
   this.z/=normal;
+  if(this.x == -0)this.x = 0;
+  if(this.y == -0)this.y = 0;
+  if(this.z == -0)this.z = 0;
 };
 Vetor.prototype.produtoEscalar = function(v) {
   return (this.x*v.x + this.y*v.y + this.z*v.z);
@@ -48,6 +51,9 @@ function Ponto3D(x, y, z) {
 Ponto3D.prototype.sub = function(p) {
   return new Ponto3D(this.x - p.x, this.y - p.y, this.z - p.z);
 };
+Ponto3D.prototype.add = function(p) {
+  return new Ponto3D(this.x + p.x, this.y + p.y, this.z + p.z);
+};
 Ponto3D.prototype.multiplicarMatrix = function(matrix) {
   var x = this.x*matrix[0][0] + this.y*matrix[0][1] + this.z*matrix[0][2];
   var y = this.x*matrix[1][0] + this.y*matrix[1][1] + this.z*matrix[1][2];
@@ -69,9 +75,18 @@ Ponto3D.prototype.getPontoTela = function(camera) {
   }
   var a = new Ponto2D(x, y);
   var r = new Ponto2D(((a.x + 1) * (largura / 2)), ((1 - a.y) * (altura / 2)));
+  r.x = Math.trunc(r.x);
+  r.y = Math.trunc(r.y);
+  if(r.x == -0) r.x = 0;
+  if(r.y == -0) r.y = 0;
   r.normal = this.normal;
   return r;
 }
+Ponto3D.prototype.multiplicar = function(k) {
+  this.x*=k;
+  this.y*=k;
+  this.z*=k;
+};
 
 function Ponto2D(x, y) {
   this.x = x;
@@ -121,26 +136,44 @@ Triangulo.prototype.getTrianguloTela = function(camera) {
                        this.p2.getPontoTela(camera),
                        this.p3.getPontoTela(camera));
 };
-Triangulo.prototype.rasterizacao = function () {
-  // TODO rasterizacao
-  ctx.fillRect(this.p1.x,this.p1.y,1,1);
-  ctx.fillRect(this.p2.x,this.p2.y,1,1);
-  ctx.fillRect(this.p3.x,this.p3.y,1,1);
-
+Triangulo.prototype.varredura = function(index) {
   /* at first sort the three vertices by y-coordinate ascending so v1 is the topmost vertice */
   this.ordenar();
   /* here we know that v1.y <= v2.y <= v3.y */
   /* check for trivial case of bottom-flat triangle */
-  if (this.p2.y == this.p3.y) desenharTrianguloSuperior(this.p1, this.p2, this.p3);
+  if (this.p2.y == this.p3.y) varrerTrianguloSuperior(this, index);
   /* check for trivial case of top-flat triangle */
-  else if (this.p1.y == this.p2.y) desenharTrianguloInferior(this.p1, this.p2, this.p3);
+  else if (this.p1.y == this.p2.y) varrerTrianguloInferior(this, index);
   else {
     /* general case - split the triangle in a topflat and bottom-flat one */
     var p4 = new Ponto2D((this.p1.x + ((this.p2.y-this.p1.y)/(this.p3.y-this.p1.y)) * (this.p3.x-this.p1.x)),this.p2.y);
-    desenharTrianguloSuperior(this.p1, this.p2, p4);
-    desenharTrianguloInferior(this.p2, p4, this.p3);
+    var tSup = new Triangulo(this.p1, this.p2, p4);
+    var tInf = new Triangulo(this.p2, p4, this.p3);
+    varrerTrianguloSuperior(tSup, index);
+    varrerTrianguloInferior(tInf, index);
   }
-
+};
+Triangulo.prototype.getPonto3DBaricentrico = function(cb) {
+  var a = this.p1;
+  var b = this.p2;
+  var g = this.p3;
+  a.multiplicar(cb.alfa);
+  b.multiplicar(cb.beta);
+  g.multiplicar(cb.gama);
+  a = a.add(b);
+  a = a.add(g);
+  return a;
+};
+Triangulo.prototype.getVetorBaricentrico = function(cb) {
+  var a = this.p1.normal;
+  var b = this.p2.normal;
+  var g = this.p3.normal;
+  a.multiplicar(cb.alfa);
+  b.multiplicar(cb.beta);
+  g.multiplicar(cb.gama);
+  a = a.add(b);
+  a = a.add(g);
+  return new Vetor(a.x, a.y, a.z);;
 };
 
 function Camera(c, n, v, d, hx, hy) {
@@ -173,7 +206,7 @@ function Objeto(triangulos) {
 }
 Objeto.prototype.desenhar = function() {
   this.triangulos.forEach(function(triangulo) {
-    triangulo.rasterizacao();
+    triangulo.varredura();
   });
 };
 
