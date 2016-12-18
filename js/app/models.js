@@ -3,6 +3,16 @@ function Vetor(x, y, z) {
   this.y = y;
   this.z = z;
 }
+Vetor.prototype.norma = function()
+{
+  var n = this.produtoEscalar(this);
+  var ret = Math.sqrt(n);
+  return ret;
+}
+Vetor.prototype.calculaCosseno = function(v) {
+  var cos = (v.produtoEscalar(this))/(this.norma()*v.norma());
+  return cos;
+}
 Vetor.prototype.normalizar = function() {
   var sum = (this.x*this.x + this.y*this.y + this.z*this.z);
   if(!sum) return;
