@@ -1,4 +1,4 @@
-var camera, iluminacao, largura = 300, altura = 300, plano, pontosTela = [];
+var camera, iluminacao, largura = 640, altura = 480, plano, pontosTela = [];
 var triangulos3D = [];
 var triangulos2D = [];
 var zBuffer = new Array(largura);
@@ -6,6 +6,10 @@ for (var i = 0; i < zBuffer.length; i++) {
   zBuffer[i] = new Array(altura);
   for (var j = 0; j < zBuffer[i].length; j++) zBuffer[i][j] = Infinity;
 }
+
+Math.clamp = function(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+};
 
 // CANVAS
 document.getElementById('canvas').width = largura;

@@ -110,7 +110,7 @@ Triangulo.prototype.ordenar = function () {
   this.p3.y = Math.round(this.p3.y*1000)/1000;
   if(this.p1.y > this.p2.y) {
     var aux = this.p1.clone();
-    this.p1 = this.p2.clone();
+    this.p1 = this.p2;
     this.p2 = aux;
   }
   if(this.p2.y > this.p3.y) {
@@ -120,7 +120,7 @@ Triangulo.prototype.ordenar = function () {
   }
   if(this.p1.y > this.p2.y) {
     var aux = this.p1.clone();
-    this.p1 = this.p2.clone();
+    this.p1 = this.p2;
     this.p2 = aux;
   }
 };
@@ -220,12 +220,9 @@ Iluminacao.prototype.getCor = function(r, p) {
   a = this.il.clone(); // vetor Il
   a.multiplicar(this.ks*pe_rv); // Ks * <R, V>^n * Il
   l = l.add(a); // l + Ks * <R, V>^n * Il
-  l.x = Math.round(l.x%255);
-  l.y = Math.round(l.y%255);
-  l.z = Math.round(l.z%255);
-  // if(l.x>255) l.x = 255;
-  // if(l.y>255) l.y = 255;
-  // if(l.z>255) l.z = 255;
+  l.x = Math.clamp(l.x,0,255);
+  l.y = Math.clamp(l.y,0,255);
+  l.z = Math.clamp(l.z,0,255);
   return l;
 };
 

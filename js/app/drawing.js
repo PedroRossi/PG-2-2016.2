@@ -32,18 +32,18 @@ function getCoordenadasBaricentricas(x, y, index) {
 }
 
 function desenharPixel(x, y, cor) {
-  var str = "rgb("+cor.x+", "+cor.y+", "+cor.z+")";
+  // var str = "rgb("+cor.x+", "+cor.y+", "+cor.z+")";
+  var str = "rgb("+100+", "+100+", "+100+")";
   ctx.fillStyle = str;
   ctx.fillRect(x,y,1,1);
 }
 
 function varrerLinha(x1, x2, y, index) {
-  if(y >= altura || y < 0 || x1 >= largura || x2 <= 0 || x1 >= x2) return;
-  if(x2 > largura) x2 = largura;
-  if(x1 < 0) x1 = 0;
-  for (var i = 0; i < x2-x1; i++) {
+  var len = Math.ceil(Math.abs(x2-x1));
+  for (var i = 0; i <= len; i++) {
     var x = x1+i;
     var cb = getCoordenadasBaricentricas(x, y, index);
+    x = Math.round(x);
     var pl = triangulos3D[index].getPonto3DBaricentrico(cb);
     if((x >= 0 && x < largura) && (y >= 0 && y < altura)) {
       if(pl.z < zBuffer[x][y]) {
@@ -91,7 +91,7 @@ function varrerTrianguloSuperior(t, index) {
   var curx2 = t.p1.x;
 
   for (var scanlineY = t.p1.y; scanlineY <= t.p2.y; scanlineY++) {
-    varrerLinha(Math.round(curx1), Math.round(curx2), scanlineY, index);
+    varrerLinha((curx1), (curx2), scanlineY, index);
     curx1 += invslope1;
     curx2 += invslope2;
   }
@@ -105,7 +105,7 @@ function varrerTrianguloInferior(t, index) {
   var curx2 = t.p3.x;
 
   for (var scanlineY = t.p3.y; scanlineY > t.p1.y; scanlineY--) {
-    varrerLinha(Math.round(curx1), Math.round(curx2), scanlineY, index);
+    varrerLinha((curx1), (curx2), scanlineY, index);
     curx1 -= invslope1;
     curx2 -= invslope2;
   }
