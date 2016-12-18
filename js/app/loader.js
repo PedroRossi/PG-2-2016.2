@@ -51,6 +51,11 @@ function loadIluminacao(data) {
 
 function loadObjeto(data) {
   document.getElementById('plano').disabled = true;
+  zBuffer = new Array(altura);
+  for (var i = 0; i < zBuffer.length; i++) {
+    zBuffer[i] = new Array(largura);
+    for (var j = 0; j < zBuffer[i].length; j++) zBuffer[i][j] = Infinity;
+  }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   var pontos3D = [];
   var pontos2D = [];
@@ -87,7 +92,6 @@ function loadObjeto(data) {
     t.calcularNormal();
     triangulos3D.push(t);
     t = new Triangulo(pontos2D[a[0]-1], pontos2D[a[1]-1], pontos2D[a[2]-1]);
-    t.ordenar();
     triangulos2D.push(t);
   }
   desenharObjeto();

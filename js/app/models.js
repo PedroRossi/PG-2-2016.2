@@ -5,6 +5,7 @@ function Vetor(x, y, z) {
 }
 Vetor.prototype.normalizar = function() {
   var sum = (this.x*this.x + this.y*this.y + this.z*this.z);
+  if(!sum) return;
   var normal = Math.sqrt(sum);
   this.x/=normal;
   this.y/=normal;
@@ -20,14 +21,12 @@ Vetor.prototype.produtoVetorial = function(v) {
   return new Vetor(x, y, z);
 };
 Vetor.prototype.multiplicar = function(k) {
-  this.x*=k;
-  this.y*=k;
-  this.z*=k;
+  return new Vetor(this.x*k, this.y*k, this.z*k);
 };
 Vetor.prototype.projecaoOrtogonal = function(v) {
   var k = (v.produtoEscalar(this))/(this.produtoEscalar(this));
   var r = new Vetor(this.x, this.y, this.z);
-  r.multiplicar(k);
+  r = r.multiplicar(k);
   return r;
 };
 Vetor.prototype.add = function(v) {
@@ -74,13 +73,11 @@ Ponto3D.prototype.getPontoTela = function(camera) {
   var r = new Ponto2D(((a.x + 1) * (largura / 2)), ((1 - a.y) * (altura / 2)));
   r.x = Math.round(r.x);
   r.y = Math.round(r.y);
-  // r.normal = this.normal.clone();
+  r.normal = this.normal.clone();
   return r;
 }
 Ponto3D.prototype.multiplicar = function(k) {
-  this.x*=k;
-  this.y*=k;
-  this.z*=k;
+  return new Ponto3D(this.x*k, this.y*k, this.z*k);
 };
 Ponto3D.prototype.clone = function() {
   return new Ponto3D(this.x, this.y, this.z);
@@ -123,7 +120,6 @@ Triangulo.prototype.calcularNormal = function() {
   var v3v1 = new Vetor(this.p3.x - this.p1.x, this.p3.y - this.p1.y, this.p3.z - this.p1.z);
   this.normal = v2v1.produtoVetorial(v3v1);
   this.normal.normalizar();
-  this.p1.normal.add(this.normal);
 };
 Triangulo.prototype.getTrianguloTela = function(camera) {
   return new Triangulo(this.p1.getPontoTela(camera),
@@ -134,20 +130,18 @@ Triangulo.prototype.getPonto3DBaricentrico = function(cb) {
   var a = this.p1.clone();
   var b = this.p2.clone();
   var g = this.p3.clone();
-  a.multiplicar(cb.alfa);
-  b.multiplicar(cb.beta);
-  g.multiplicar(cb.gama);
-  a = a.add(b);
-  a = a.add(g);
-  return a;
+  a = a.multiplicar(cb.alfa);
+  b = b.multiplicar(cb.beta);
+  g = g.multiplicar(cb.gama);
+  return new Ponto3D(a.x+b.x+g.x, a.y+b.y+g.y, a.z+b.z+g.z);
 };
 Triangulo.prototype.getVetorBaricentrico = function(cb) {
   var a = this.p1.normal.clone();
   var b = this.p2.normal.clone();
   var g = this.p3.normal.clone();
-  a.multiplicar(cb.alfa);
-  b.multiplicar(cb.beta);
-  g.multiplicar(cb.gama);
+  a = a.multiplicar(cb.alfa);
+  b = b.multiplicar(cb.beta);
+  g = g.multiplicar(cb.gama);
   a = a.add(b);
   a = a.add(g);
   return new Vetor(a.x, a.y, a.z);;
@@ -191,32 +185,32 @@ function Iluminacao(pl, ka, ia, kd, od, ks, il, n) {
   this.il = il;
   this.n = n;
 }
-Iluminacao.prototype.getCor = function(r, p) {
-  var a = this.pl.sub(p);
-  var L = new Vetor(a.x, a.y, a.z); // PL -P | P é ponto do triangulo e PL é o foco da luz
-  var N = r.clone(); // Normal do triangulo
-  var V = new Vetor(camera.c.x-p.x, camera.c.y-p.y, camera.c.z-p.z); // C - P | C é o foco da camera
+Iluminacao.prototype.getCor = function(L, N, V, R, p) {
+  // V = new Vetor(camera.c.x-p.x, camera.c.y-p.y, camera.c.z-p.z); // C - P | C é o foco da camera
+  // V.normalizar();
   var l = this.ia.clone();
-  l.multiplicar(this.ka); // Ia * Ka
-  N.normalizar();
-  L.normalizar();
-  V.normalizar();
-  var pe_nl = N.produtoEscalar(L); // <N, L>
-  N.multiplicar(2*pe_nl); // 2 * <N, L> * N
-  var R = N.sub(L); // 2 * <N, L> * N - L
-  a = this.od.clone(); // vetor OD Difuso
-  a = a.produtoEscalar(this.il); // <Od, Il>
-  a *= (this.kd*pe_nl); // <Od, Il> * Kd * <N, L>
-  l = new Vetor(l.x+a, l.y+a, l.z+a); // l + a(cte)
-  var pe_rv = R.produtoEscalar(V); // <R, V>
-  var aux = pe_rv;
-  for (var i = 0; i < this.n; i++) pe_rv *= aux; // n é a cte de rugosidade | <R, V> ^n
-  a = this.il.clone(); // vetor Il
-  a.multiplicar(this.ks*pe_rv); // Ks * <R, V>^n * Il
-  l = l.add(a); // l + Ks * <R, V>^n * Il
+  l = l.multiplicar(this.ka); // Ia * Ka
+  if(N != null) {
+    var pe_nl = N.produtoEscalar(L); // <N, L>
+    a = this.od.clone(); // vetor OD Difuso
+    a = a.produtoEscalar(this.il); // <Od, Il>
+    a *= (this.kd*pe_nl); // <Od, Il> * Kd * <N, L>
+    l = new Vetor(l.x+a, l.y+a, l.z+a); // l + a(cte)
+  }
+  if(R != null) {
+    var pe_rv = R.produtoEscalar(V); // <R, V>
+    var aux = pe_rv;
+    for (var i = 0; i < this.n; i++) pe_rv *= aux; // n é a cte de rugosidade | <R, V> ^n
+    a = this.il.clone(); // vetor Il
+    a = a.multiplicar(this.ks*pe_rv); // Ks * <R, V>^n * Il
+    l = l.add(a); // l + Ks * <R, V>^n * Il
+  }
   l.x = Math.clamp(l.x,0,255);
   l.y = Math.clamp(l.y,0,255);
   l.z = Math.clamp(l.z,0,255);
+  l.x = Math.round(l.x);
+  l.y = Math.round(l.y);
+  l.z = Math.round(l.z);
   return l;
 };
 
