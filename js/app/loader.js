@@ -1,4 +1,13 @@
+document.getElementById('camera').disabled = false;
+document.getElementById('iluminacao').disabled = true;
+document.getElementById('objeto').disabled = true;
+document.getElementById('plano').disabled = true;
+
+
 function loadCamera(data) {
+  document.getElementById('iluminacao').disabled = true;
+  document.getElementById('objeto').disabled = true;
+  document.getElementById('plano').disabled = true;
   camera = {};
   var a;
   a = data[0].split(' ');
@@ -14,9 +23,12 @@ function loadCamera(data) {
   camera = new Camera(c, n, v, d, hx, hy);
   // console.log("Camera");console.log(camera);
   camera.genAlfa();
+  document.getElementById('iluminacao').disabled = false;
 }
 
 function loadIluminacao(data) {
+  document.getElementById('objeto').disabled = true;
+  document.getElementById('plano').disabled = true;
   iluminacao = {};
   var a;
   a = data[0].split(' ');
@@ -34,9 +46,11 @@ function loadIluminacao(data) {
   iluminacao = new Iluminacao(pl, ka, ia, kd, od, ks, il, n);
   // console.log("Iluminacao");console.log(iluminacao);
   iluminacao.pl.getPontoVista(camera);
+  document.getElementById('objeto').disabled = false;
 }
 
 function loadObjeto(data) {
+  document.getElementById('plano').disabled = true;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   var pontos3D = [];
   var pontos2D = [];
@@ -91,8 +105,9 @@ function loadPlano(data) {
   plano = new Plano(p1, p2, p3, s);
   var v1 = plano.calcularVetorNormal();
   var d = plano.calcularD();
-  console.log("Plano");console.log(plano);
-  console.log(v1); console.log(d);
+  // console.log("Plano");console.log(plano);
+  // console.log(v1); console.log(d);
+  document.getElementById('plano').disabled = false;
 }
 
 function handleFileSelect(evt) {

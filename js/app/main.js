@@ -1,4 +1,4 @@
-var camera, iluminacao, largura = 640, altura = 480, plano, pontosTela = [];
+var camera, iluminacao, plano, largura = 640, altura = 480;
 var triangulos3D = [];
 var triangulos2D = [];
 var zBuffer = new Array(largura);

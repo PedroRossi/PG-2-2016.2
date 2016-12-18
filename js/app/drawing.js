@@ -17,6 +17,7 @@ function getCoordenadasBaricentricas(x, y, index) {
   solucao[1] = (sistema[1][3] - (solucao[2] * sistema[1][2])) / sistema[1][1];
   solucao[0] = (sistema[0][3] - (solucao[2] * sistema[0][2]) - (solucao[1] * sistema[0][1])) / sistema[0][0];
   var alfa, beta, gama;
+  for (var i = 0; i < solucao.length; i++) if(solucao[i] == '-0') solucao[i] = 0;
   alfa = solucao[0];
   beta = solucao[1];
   gama = solucao[2];
@@ -36,19 +37,20 @@ function desenharPixel(x, y, cor) {
 }
 
 function varrerLinha(x1, x2, y, index) {
-  var len = Math.ceil(Math.abs((x2)-(x1)));
   if(x1>x2) {
-    var aux = x2;
-    x2 = x1;
-    x1 = aux;
+    var aux = x1;
+    x1 = x2;
+    x2 = aux;
   }
+  var len = (x2-x1);
   for (var i = 0; i <= len; i++) {
     var x = x1+i;
     var cb = getCoordenadasBaricentricas(x, y, index);
     var pl = triangulos3D[index].getPonto3DBaricentrico(cb);
     if((x >= 0 && x < largura) && (y >= 0 && y < altura)) {
-      if(pl.z < zBuffer[Math.round(x)][y]) {
-        zBuffer[Math.round(x)][y] = pl.z;
+      var x = Math.round(x);
+      if(pl.z < zBuffer[x][y]) {
+        zBuffer[x][y] = pl.z;
         var N, V, L, R;
   			N = triangulos2D[index].getVetorBaricentrico(cb);
         N.normalizar();
@@ -75,9 +77,10 @@ function varrerLinha(x1, x2, y, index) {
             // nao possui componente especular.
           }
         }
-        var cor = iluminacao.getCor(triangulos3D[index].normal, pl);
-        desenharPixel(x, y, cor);
+        //
       }
+      var cor = iluminacao.getCor(triangulos3D[index].normal, pl);
+      desenharPixel(x, y, cor);
     }
   }
 }
@@ -116,7 +119,8 @@ function desenharObjeto() {
     if (t.p2.y == t.p3.y) varrerTrianguloSuperior(t, i);
     else if (t.p1.y == t.p2.y) varrerTrianguloInferior(t, i);
     else { // Separa o triangulo em dois
-      var p4 = new Ponto2D((t.p1.x + ((t.p2.y-t.p1.y)/(t.p3.y-t.p1.y)) * (t.p3.x-t.p1.x)),t.p2.y);
+      var x = (t.p1.x + ((t.p2.y-t.p1.y)/(t.p3.y-t.p1.y)) * (t.p3.x-t.p1.x));
+      var p4 = new Ponto2D(x,t.p2.y);
       var tSup = new Triangulo(t.p1, t.p2, p4);
       var tInf = new Triangulo(t.p2, p4, t.p3);
       varrerTrianguloSuperior(tSup, i);
