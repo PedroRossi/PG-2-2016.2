@@ -39,15 +39,14 @@ function desenharPixel(x, y, cor) {
 }
 
 function varrerLinha(x1, x2, y, index) {
-  var len = Math.ceil(Math.abs(x2-x1));
+  var len = Math.ceil(Math.abs((x2)-(x1)));
   for (var i = 0; i <= len; i++) {
     var x = x1+i;
     var cb = getCoordenadasBaricentricas(x, y, index);
-    x = Math.round(x);
     var pl = triangulos3D[index].getPonto3DBaricentrico(cb);
     if((x >= 0 && x < largura) && (y >= 0 && y < altura)) {
-      if(pl.z < zBuffer[x][y]) {
-        zBuffer[x][y] = pl.z;
+      if(pl.z < zBuffer[Math.round(x)][y]) {
+        zBuffer[Math.round(x)][y] = pl.z;
         var N, V, L, R;
   			N = triangulos2D[index].getVetorBaricentrico(cb);
         N.normalizar();
@@ -72,8 +71,6 @@ function varrerLinha(x1, x2, y, index) {
           var R = N.sub(L);
           if(R.produtoEscalar(V)<0) {
             // nao possui componente especular.
-          } else {
-
           }
         }
         var cor = iluminacao.getCor(triangulos3D[index].normal, pl);

@@ -102,12 +102,6 @@ function Triangulo(p1, p2, p3) {
   this.normal = new Vetor(0, 0, 0);
 }
 Triangulo.prototype.ordenar = function () {
-  this.p1.x = Math.round(this.p1.x*1000)/1000;
-  this.p2.x = Math.round(this.p2.x*1000)/1000;
-  this.p3.x = Math.round(this.p3.x*1000)/1000;
-  this.p1.y = Math.round(this.p1.y*1000)/1000;
-  this.p2.y = Math.round(this.p2.y*1000)/1000;
-  this.p3.y = Math.round(this.p3.y*1000)/1000;
   if(this.p1.y > this.p2.y) {
     var aux = this.p1.clone();
     this.p1 = this.p2;
