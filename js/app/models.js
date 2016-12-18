@@ -234,4 +234,5 @@ Plano.prototype.calcularVetorNormal = function(){
 Plano.prototype.calcularD = function(){
   var normal = calcularVetorNormal();
   var d = this.s*(normal.x + normal.y + normal.z);
+  return d;
 };
