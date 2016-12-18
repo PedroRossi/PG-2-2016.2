@@ -20,6 +20,9 @@ function getCoordenadasBaricentricas(x, y, index) {
   alfa = solucao[0];
   beta = solucao[1];
   gama = solucao[2];
+  // alfa = Math.round(alfa*10)/10;
+  // beta = Math.round(beta*10)/10;
+  // gama = Math.round(gama*10)/10;
   var r = {
     alfa: alfa,
     beta: beta,
@@ -29,8 +32,9 @@ function getCoordenadasBaricentricas(x, y, index) {
 }
 
 function desenharPixel(x, y, cor) {
+  var str = "rgb("+cor.x+", "+cor.y+", "+cor.z+")";
+  ctx.fillStyle = str;
   ctx.fillRect(x,y,1,1);
-  // pontosTela.push([x, y]);
 }
 
 function varrerLinha(x1, x2, y, index) {
@@ -44,15 +48,15 @@ function varrerLinha(x1, x2, y, index) {
     if((x >= 0 && x < largura) && (y >= 0 && y < altura)) {
       if(pl.z < zBuffer[x][y]) {
         zBuffer[x][y] = pl.z;
-
-  			var N = triangulos2D[index].getVetorBaricentrico(cb);
+        var N, V, L, R;
+  			N = triangulos2D[index].getVetorBaricentrico(cb);
         N.normalizar();
 
-        var V = new Vetor((-1)*pl.x, (-1)*pl.y, (-1)*pl.z);
+        V = new Vetor((-1)*pl.x, (-1)*pl.y, (-1)*pl.z);
         V.normalizar();
 
-        var L = iluminacao.pl.sub(pl);
-        L = new Vetor(L.x, L.y, L.z);
+        var c = iluminacao.pl.sub(pl);
+        L = new Vetor(c.x, c.y, c.z);
         L.normalizar();
 
         if(V.produtoEscalar(N)<0) {
@@ -69,14 +73,11 @@ function varrerLinha(x1, x2, y, index) {
           if(R.produtoEscalar(V)<0) {
             // nao possui componente especular.
           } else {
-            /*
-      			Substituir no modelo de Phong, obtendo a cor do pixel atual. Se alguma componente (r,g,b) der mais que 255, deixe-a em 255.
-      			Pintar o pixel (P.x, P.y) com a cor obtida.
-            */
-            // console.log(x + " " + y);
-            desenharPixel(x, y, 0);
+
           }
         }
+        var cor = iluminacao.getCor(triangulos3D[index].normal, pl);
+        desenharPixel(x, y, cor);
       }
     }
   }

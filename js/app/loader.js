@@ -29,7 +29,7 @@ function loadIluminacao(data) {
   var od = new Vetor(a[0], a[1], a[2]);
   var ks = data[5];
   var a = data[6].split(' ');
-  var il = new Cor(a[0], a[1], a[2]);
+  var il = new Vetor(a[0], a[1], a[2]);
   var n = data[7];
   iluminacao = new Iluminacao(pl, ka, ia, kd, od, ks, il, n);
   // console.log("Iluminacao");console.log(iluminacao);
@@ -70,6 +70,7 @@ function loadObjeto(data) {
   for(var j = 0; j < qntT; ++j, ++i) {
     a = data[i].split(' ');
     var t = new Triangulo(pontos3D[a[0]-1], pontos3D[a[1]-1], pontos3D[a[2]-1]);
+    t.calcularNormal();
     triangulos3D.push(t);
     t = new Triangulo(pontos2D[a[0]-1], pontos2D[a[1]-1], pontos2D[a[2]-1]);
     triangulos2D.push(t);
