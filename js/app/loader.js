@@ -137,10 +137,12 @@ function loadPlano(data) {
   a = data[3].split(' ');
   var p3 = new Ponto3D(a[0], a[1], a[2]);
   plano = new Plano(p1, p2, p3, s);
-  var v1 = plano.calcularVetorNormal();
-  var d = plano.calcularD();
-  console.log("Plano");console.log(plano);
-  console.log(v1);console.log(d);
+  //var v1 = plano.calcularVetorNormal();
+  //var d = plano.calcularD();
+  //console.log("Plano");console.log(plano);
+  //var ponto = new Ponto3D(1, 2, 1);
+  //console.log(v1);console.log(d);
+  //console.log(plano.calcularSinal(ponto));
 }
 
 function handleFileSelect(evt) {

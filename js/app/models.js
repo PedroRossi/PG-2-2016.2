@@ -236,3 +236,10 @@ Plano.prototype.calcularD = function(){
   var d = x + y + z;
   return d;
 };
+Plano.prototype.calcularSinal = function(ponto){
+  var saida = 0;
+  var aux = (this.vetorNormal.x*ponto.x) + (this.vetorNormal.y*ponto.y) + (this.vetorNormal.z*ponto.z) - this.d;
+  if(aux > 0) saida = 1;
+  else if(aux < 0) saida = -1;
+  return saida;
+}
