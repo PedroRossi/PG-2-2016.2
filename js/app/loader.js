@@ -1,13 +1,13 @@
 document.getElementById('camera').disabled = false;
 document.getElementById('iluminacao').disabled = true;
 document.getElementById('objeto').disabled = true;
-document.getElementById('plano').disabled = true;
+document.getElementById('plano').disabled = false;
 
 
 function loadCamera(data) {
   document.getElementById('iluminacao').disabled = true;
   document.getElementById('objeto').disabled = true;
-  document.getElementById('plano').disabled = true;
+  document.getElementById('plano').disabled = false;
   camera = {};
   var a;
   a = data[0].split(' ');
@@ -95,6 +95,7 @@ function loadObjeto(data) {
     triangulos2D.push(t);
   }
   desenharObjeto();
+  document.getElementById('plano').disabled = false;
 }
 
 function loadPlano(data) {
@@ -109,8 +110,8 @@ function loadPlano(data) {
   plano = new Plano(p1, p2, p3, s);
   var v1 = plano.calcularVetorNormal();
   var d = plano.calcularD();
-  // console.log("Plano");console.log(plano);
-  // console.log(v1); console.log(d);
+   console.log("Plano");console.log(plano);
+   console.log(v1); console.log(d);
   document.getElementById('plano').disabled = false;
 }
 
