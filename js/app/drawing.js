@@ -34,8 +34,8 @@ function getCoordenadasBaricentricas(x, y, index) {
 }
 
 function desenharPixel(x, y, cor) {
-  // var str = "rgb("+cor.x+", "+cor.y+", "+cor.z+")";
-  var str = "rgb("+100+", "+100+", "+100+")";
+  var str = "rgb("+cor.x+", "+cor.y+", "+cor.z+")";
+  // var str = "rgb("+100+", "+100+", "+100+")";
   ctx.fillStyle = str;
   ctx.fillRect(x,y,1,1);
 }

@@ -186,16 +186,17 @@ function Iluminacao(pl, ka, ia, kd, od, ks, il, n) {
   this.n = n;
 }
 Iluminacao.prototype.getCor = function(L, N, V, R, p) {
-  // V = new Vetor(camera.c.x-p.x, camera.c.y-p.y, camera.c.z-p.z); // C - P | C é o foco da camera
-  // V.normalizar();
   var l = this.ia.clone();
   l = l.multiplicar(this.ka); // Ia * Ka
   if(N != null) {
     var pe_nl = N.produtoEscalar(L); // <N, L>
     a = this.od.clone(); // vetor OD Difuso
-    a = a.produtoEscalar(this.il); // <Od, Il>
-    a *= (this.kd*pe_nl); // <Od, Il> * Kd * <N, L>
-    l = new Vetor(l.x+a, l.y+a, l.z+a); // l + a(cte)
+
+    a = new Vetor(a.x*this.il.x, a.y*this.il.y, a.z*this.il.z); // ISSO É O CORRETO
+
+    a = a.multiplicar(this.kd*pe_nl); //ISSO É O CORRETO
+
+    l = new Vetor(l.x+a.x, l.y+a.y, l.z+a.z); //ISSO É O CERTO
   }
   if(R != null) {
     var pe_rv = R.produtoEscalar(V); // <R, V>
@@ -205,12 +206,12 @@ Iluminacao.prototype.getCor = function(L, N, V, R, p) {
     a = a.multiplicar(this.ks*pe_rv); // Ks * <R, V>^n * Il
     l = l.add(a); // l + Ks * <R, V>^n * Il
   }
-  l.x = Math.clamp(l.x,0,255);
-  l.y = Math.clamp(l.y,0,255);
-  l.z = Math.clamp(l.z,0,255);
   l.x = Math.round(l.x);
   l.y = Math.round(l.y);
   l.z = Math.round(l.z);
+  l.x = Math.min(l.x,255);
+  l.y = Math.min(l.y,255);
+  l.z = Math.min(l.z,255);
   return l;
 };
 
