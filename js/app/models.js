@@ -62,25 +62,19 @@ Ponto3D.prototype.multiplicarMatrix = function(matrix) {
   return new Ponto3D(x, y, z);
 };
 Ponto3D.prototype.getPontoVista = function(camera) {
-  var r = this;
-  r = r.sub(camera.c);
-  r = r.multiplicarMatrix(camera.alfa);
+  var a = this.clone();
+  var b = a.sub(camera.c);
+  var r = b.multiplicarMatrix(camera.alfa);
   return r;
 };
 Ponto3D.prototype.getPontoTela = function(camera) {
   var x = (camera.d/camera.hx)*(this.x/this.z);
   var y = (camera.d/camera.hy)*(this.y/this.z);
-  if(this.z == 0) {
-    x = -1;
-    y = 1;
-  }
   var a = new Ponto2D(x, y);
   var r = new Ponto2D(((a.x + 1) * (largura / 2)), ((1 - a.y) * (altura / 2)));
-  r.x = Math.trunc(r.x);
-  r.y = Math.trunc(r.y);
-  if(r.x == -0) r.x = 0;
-  if(r.y == -0) r.y = 0;
-  r.normal = this.normal;
+  r.x = Math.round(r.x);
+  r.y = Math.round(r.y);
+  // r.normal = this.normal.clone();
   return r;
 }
 Ponto3D.prototype.multiplicar = function(k) {
@@ -106,30 +100,28 @@ function Triangulo(p1, p2, p3) {
   this.p2 = p2;
   this.p3 = p3;
   this.normal = new Vetor(0, 0, 0);
-  this.ordenar();
 }
 Triangulo.prototype.ordenar = function () {
-  var p1 = this.p1;
-  var p2 = this.p2;
-  var p3 = this.p3;
-  if(this.p1.y > this.p2.y && this.p1.y > this.p3.y) {
-    if(this.p2.y > this.p3.y) {
-      this.p1 = p3;
-      this.p2 = p2;
-      this.p3 = p1;
-    } else {
-      this.p1 = p2;
-      this.p2 = p3;
-      this.p3 = p1;
-    }
-  } else if(this.p1.y > this.p3.y) {
-    this.p1 = p3;
-    this.p2 = p1;
-    this.p3 = p2;
-  } else if(this.p2.y > this.p3.y) {
-    this.p1 = p1;
-    this.p2 = p3;
-    this.p3 = p2;
+  this.p1.x = Math.round(this.p1.x*1000)/1000;
+  this.p2.x = Math.round(this.p2.x*1000)/1000;
+  this.p3.x = Math.round(this.p3.x*1000)/1000;
+  this.p1.y = Math.round(this.p1.y*1000)/1000;
+  this.p2.y = Math.round(this.p2.y*1000)/1000;
+  this.p3.y = Math.round(this.p3.y*1000)/1000;
+  if(this.p1.y > this.p2.y) {
+    var aux = this.p1.clone();
+    this.p1 = this.p2.clone();
+    this.p2 = aux;
+  }
+  if(this.p2.y > this.p3.y) {
+    var aux = this.p2.clone();
+    this.p2 = this.p3;
+    this.p3 = aux;
+  }
+  if(this.p1.y > this.p2.y) {
+    var aux = this.p1.clone();
+    this.p1 = this.p2.clone();
+    this.p2 = aux;
   }
 };
 Triangulo.prototype.calcularNormal = function() {

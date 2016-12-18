@@ -38,7 +38,7 @@ function desenharPixel(x, y, cor) {
 }
 
 function varrerLinha(x1, x2, y, index) {
-  if(y >= altura || y < 0 || x1 >= largura || x2 <= 0) return;
+  if(y >= altura || y < 0 || x1 >= largura || x2 <= 0 || x1 >= x2) return;
   if(x2 > largura) x2 = largura;
   if(x1 < 0) x1 = 0;
   for (var i = 0; i < x2-x1; i++) {
@@ -91,7 +91,7 @@ function varrerTrianguloSuperior(t, index) {
   var curx2 = t.p1.x;
 
   for (var scanlineY = t.p1.y; scanlineY <= t.p2.y; scanlineY++) {
-    varrerLinha(Math.trunc(curx1), Math.trunc(curx2), scanlineY, index);
+    varrerLinha(Math.round(curx1), Math.round(curx2), scanlineY, index);
     curx1 += invslope1;
     curx2 += invslope2;
   }
@@ -105,7 +105,7 @@ function varrerTrianguloInferior(t, index) {
   var curx2 = t.p3.x;
 
   for (var scanlineY = t.p3.y; scanlineY > t.p1.y; scanlineY--) {
-    varrerLinha(Math.trunc(curx1), Math.trunc(curx2), scanlineY, index);
+    varrerLinha(Math.round(curx1), Math.round(curx2), scanlineY, index);
     curx1 -= invslope1;
     curx2 -= invslope2;
   }

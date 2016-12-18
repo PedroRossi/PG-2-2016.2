@@ -73,6 +73,7 @@ function loadObjeto(data) {
     t.calcularNormal();
     triangulos3D.push(t);
     t = new Triangulo(pontos2D[a[0]-1], pontos2D[a[1]-1], pontos2D[a[2]-1]);
+    t.ordenar();
     triangulos2D.push(t);
   }
   desenharObjeto();
