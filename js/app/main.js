@@ -1,4 +1,4 @@
-var camera, iluminacao, plano, largura = 640, altura = 480;
+var camera, iluminacao, plano, largura = 1280, altura = 720;
 var pontos3DMundo = [];
 var triangulos3D = [];
 var triangulos2D = [];

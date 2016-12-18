@@ -19,6 +19,12 @@ function loadCamera(data) {
   camera = new Camera(c, n, v, d, hx, hy);
   // console.log("Camera");console.log(camera);
   camera.genAlfa();
+  if(iluminacao) {
+    iluminacao.pl = iluminacao.pl.getPontoVista(camera);
+    if(objeto) {
+
+    }
+  }
   document.getElementById('iluminacao').disabled = false;
 }
 
@@ -42,6 +48,32 @@ function loadIluminacao(data) {
   // console.log("Iluminacao");console.log(iluminacao);
   iluminacao.pl = iluminacao.pl.getPontoVista(camera);
   document.getElementById('objeto').disabled = false;
+}
+
+function construirObjeto(pontos3D) {
+  // TODO
+  for(var j = 0; j < qntT; ++j, ++i) {
+    a = data[i].split(' ');
+    var t = new Triangulo(pontos3D[a[0]-1], pontos3D[a[1]-1], pontos3D[a[2]-1]);
+    t.calcularNormal();
+    var normal = t.normal;
+    pontos3D[a[0]-1].normal = pontos3D[a[0]-1].normal.add(normal);
+    pontos3D[a[1]-1].normal = pontos3D[a[1]-1].normal.add(normal);
+    pontos3D[a[2]-1].normal = pontos3D[a[2]-1].normal.add(normal);
+  }
+  for (var a = 0; a < pontos3D.length; a++) {
+    pontos3D[a].normal.normalizar();
+    pontos2D[a] = pontos3D[a].getPontoTela(camera);
+  }
+  i-=qntT;
+  for(var j = 0; j < triangulos3D.length; ++j, ++i) {
+    a = data[i].split(' ');
+    var t = new Triangulo(pontos3D[a[0]-1], pontos3D[a[1]-1], pontos3D[a[2]-1]);
+    t.calcularNormal();
+    triangulos3D[j]=(t);
+    t = new Triangulo(pontos2D[a[0]-1], pontos2D[a[1]-1], pontos2D[a[2]-1]);
+    triangulos2D[j]=(t);
+  }
 }
 
 function loadObjeto(data) {

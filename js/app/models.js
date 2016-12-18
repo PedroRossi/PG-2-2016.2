@@ -144,7 +144,7 @@ Triangulo.prototype.getVetorBaricentrico = function(cb) {
   g = g.multiplicar(cb.gama);
   a = a.add(b);
   a = a.add(g);
-  return new Vetor(a.x, a.y, a.z);;
+  return new Vetor(a.x, a.y, a.z);
 };
 
 function Camera(c, n, v, d, hx, hy) {
@@ -177,13 +177,12 @@ function Iluminacao(pl, ka, ia, kd, od, ks, il, n) {
   this.n = n;
 }
 Iluminacao.prototype.getCor = function(L, N, V, R, p) {
+  var a;
   var l = this.ia.clone();
   l = l.multiplicar(this.ka); // Ia * Ka
   if(N != null) {
     var pe_nl = N.produtoEscalar(L); // <N, L>
-    a = this.od.clone(); // vetor OD Difuso
-
-    a = new Vetor(a.x*this.il.x, a.y*this.il.y, a.z*this.il.z); // ISSO É O CORRETO
+    a = new Vetor(this.od.x*this.il.x, this.od.y*this.il.y, this.od.z*this.il.z); // ISSO É O CORRETO
 
     a = a.multiplicar(this.kd*pe_nl); //ISSO É O CORRETO
 

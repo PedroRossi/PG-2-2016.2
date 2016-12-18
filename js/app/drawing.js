@@ -35,7 +35,6 @@ function getCoordenadasBaricentricas(x, y, index) {
 
 function desenharPixel(x, y, cor) {
   var str = "rgb("+cor.x+", "+cor.y+", "+cor.z+")";
-  // var str = "rgb("+100+", "+100+", "+100+")";
   ctx.fillStyle = str;
   ctx.fillRect(x,y,1,1);
 }
@@ -43,7 +42,7 @@ function desenharPixel(x, y, cor) {
 function avaliarPonto(x, y, index) {
   var cb = getCoordenadasBaricentricas(x, y, index);
   var pl = triangulos3D[index].getPonto3DBaricentrico(cb);
-  var N, V, L, R, cor = new Vetor(0, 0, 0);
+  var N, V, L, R, cor;
   if(pl.z < zBuffer[y][x]) {
     zBuffer[y][x] = pl.z;
     N = triangulos3D[index].getVetorBaricentrico(cb);
@@ -67,7 +66,7 @@ function avaliarPonto(x, y, index) {
     } else {
       var k = 2*N.produtoEscalar(L);
       var a = N.clone();
-      a.multiplicar(k);
+      a = a.multiplicar(k);
       R = a.sub(L);
       if(R.produtoEscalar(V)<0) {
         // nao possui componente especular.
