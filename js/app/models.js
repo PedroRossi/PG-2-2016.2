@@ -204,7 +204,7 @@ function Iluminacao(pl, ka, ia, kd, od, ks, il, n) {
   this.il = il;
   this.n = n;
 }
-Iluminacao.prototype.calcularCor = function(p, L) {
+Iluminacao.prototype.getCor = function(p, L) {
   var l = this.ia;
   l.multiplicar(this.ka);
   N.normalizar();
@@ -232,6 +232,7 @@ Plano.prototype.calcularVetorNormal = function(){
   return v1.produtoVetorial(v2);
 };
 Plano.prototype.calcularD = function(){
-  var normal = calcularVetorNormal();
+  var normal = this.calcularVetorNormal();
   var d = this.s*(normal.x + normal.y + normal.z);
+  return d;
 };

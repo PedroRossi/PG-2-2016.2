@@ -12,7 +12,7 @@ function loadCamera(data) {
   var hx = a[1];
   var hy = a[2];
   camera = new Camera(c, n, v, d, hx, hy);
-  console.log("Camera");console.log(camera);
+  // console.log("Camera");console.log(camera);
   camera.genAlfa();
 }
 
@@ -37,9 +37,11 @@ function loadIluminacao(data) {
 }
 
 function loadObjeto(data) {
-  mainCtx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   var pontos3D = [];
   var pontos2D = [];
+  triangulos3D = [];
+  triangulos2D = [];
   var a;
   a = data[0].split(' ');
   var qntP = a[0];
@@ -48,7 +50,7 @@ function loadObjeto(data) {
   for (i = 1; i <= qntP; ++i) {
     a = data[i].split(' ');
     var p = new Ponto3D(a[0], a[1], a[2]);
-    p.getPontoVista(camera);
+    p = p.getPontoVista(camera);
     pontos3D.push(p);
   }
   for(var j = 0; j < qntT; ++j, ++i) {
@@ -76,10 +78,8 @@ function loadObjeto(data) {
 }
 
 function loadPlano(data) {
-  plano = {};
-  var a;
-  a = data[0].split(' ');
   var s = data[0];
+  var a;
   a = data[1].split(' ');
   var p1 = new Ponto3D(a[0], a[1], a[2]);
   a = data[2].split(' ');
@@ -87,7 +87,7 @@ function loadPlano(data) {
   a = data[3].split(' ');
   var p3 = new Ponto3D(a[0], a[1], a[2]);
   plano = new Plano(p1, p2, p3, s);
-  console.log("Plano");console.log(plano);
+  // console.log("Plano");console.log(plano);
 }
 
 function handleFileSelect(evt) {

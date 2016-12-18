@@ -29,10 +29,8 @@ function getCoordenadasBaricentricas(x, y, index) {
 }
 
 function desenharPixel(x, y, cor) {
-  painting = true;
-  curX = x;
-  curY = y;
-  // auxCtx.fillRect(x,y,1,1);
+  ctx.fillRect(x,y,1,1);
+  // pontosTela.push([x, y]);
 }
 
 function varrerLinha(x1, x2, y, index) {
@@ -75,6 +73,7 @@ function varrerLinha(x1, x2, y, index) {
       			Substituir no modelo de Phong, obtendo a cor do pixel atual. Se alguma componente (r,g,b) der mais que 255, deixe-a em 255.
       			Pintar o pixel (P.x, P.y) com a cor obtida.
             */
+            // console.log(x + " " + y);
             desenharPixel(x, y, 0);
           }
         }
@@ -114,12 +113,6 @@ function varrerTrianguloInferior(t, index) {
 function desenharObjeto() {
   for (var i = 0; i < triangulos2D.length; i++) {
     var t = triangulos2D[i];
-
-    auxCtx.fillRect(t.p1.x, t.p1.y, 10, 10);
-    auxCtx.fillRect(t.p2.x, t.p2.y, 10, 10);
-    auxCtx.fillRect(t.p3.x, t.p3.y, 10, 10);
-    continue;
-
     if (t.p2.y == t.p3.y) varrerTrianguloSuperior(t, i);
     else if (t.p1.y == t.p2.y) varrerTrianguloInferior(t, i);
     else { // Separa o triangulo em dois
@@ -130,5 +123,4 @@ function desenharObjeto() {
       varrerTrianguloInferior(tInf, i);
     }
   }
-  // mainCtx.drawImage(auxCanvas, 0, 0);
 }
