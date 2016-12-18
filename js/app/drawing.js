@@ -1,7 +1,7 @@
 function getCoordenadasBaricentricas(x, y, index) {
   var i, j;
   var sistema = [[triangulos2D[index].p1.x, triangulos2D[index].p2.x, triangulos2D[index].p3.x, x], [triangulos2D[index].p1.y, triangulos2D[index].p2.y, triangulos2D[index].p3.y, y], [1,1,1,1]];
-  var alfa, beta, gama;
+  var solucao = [0, 0, 0];
   var coef_10, coef_20, coef_21;
   coef_10 = -1.0 * sistema[1][0] / sistema[0][0];
   coef_20 = -1.0 * sistema[2][0] / sistema[0][0];
@@ -13,12 +13,13 @@ function getCoordenadasBaricentricas(x, y, index) {
   for (j = 1; j < 4; j++) {
     sistema[2][j] += coef_21 * sistema[1][j];
   }
-  gama = (sistema[2][3]) / sistema[2][2];
-  beta = (sistema[1][3] - (gama * sistema[1][2])) / sistema[1][1];
-  alfa = (sistema[0][3] - (gama * sistema[0][2]) - (beta * sistema[0][1])) / sistema[0][0];
-  alfa = (Math.round(alfa*10))/10;
-  beta = (Math.round(beta*10))/10;
-  gama = (Math.round(gama*10))/10;
+  solucao[2] = (sistema[2][3]) / sistema[2][2];
+  solucao[1] = (sistema[1][3] - (solucao[2] * sistema[1][2])) / sistema[1][1];
+  solucao[0] = (sistema[0][3] - (solucao[2] * sistema[0][2]) - (solucao[1] * sistema[0][1])) / sistema[0][0];
+  var alfa, beta, gama;
+  alfa = solucao[0];
+  beta = solucao[1];
+  gama = solucao[2];
   var r = {
     alfa: alfa,
     beta: beta,
@@ -28,11 +29,14 @@ function getCoordenadasBaricentricas(x, y, index) {
 }
 
 function desenharPixel(x, y, cor) {
-  ctx.fillRect(x,y,1,1);
+  painting = true;
+  curX = x;
+  curY = y;
+  // auxCtx.fillRect(x,y,1,1);
 }
 
 function varrerLinha(x1, x2, y, index) {
-  if(y >= altura || y < 0 || x1 >= largura) return;
+  if(y >= altura || y < 0 || x1 >= largura || x2 <= 0) return;
   if(x2 > largura) x2 = largura;
   if(x1 < 0) x1 = 0;
   for (var i = 0; i < x2-x1; i++) {
@@ -42,13 +46,17 @@ function varrerLinha(x1, x2, y, index) {
     if((x >= 0 && x < largura) && (y >= 0 && y < altura)) {
       if(pl.z < zBuffer[x][y]) {
         zBuffer[x][y] = pl.z;
+
   			var N = triangulos2D[index].getVetorBaricentrico(cb);
+        N.normalizar();
+
         var V = new Vetor((-1)*pl.x, (-1)*pl.y, (-1)*pl.z);
+        V.normalizar();
+
         var L = iluminacao.pl.sub(pl);
         L = new Vetor(L.x, L.y, L.z);
-        N.normalizar();
-        V.normalizar();
         L.normalizar();
+
         if(V.produtoEscalar(N)<0) {
           N.x*=-1;
           N.y*=-1;
@@ -67,7 +75,7 @@ function varrerLinha(x1, x2, y, index) {
       			Substituir no modelo de Phong, obtendo a cor do pixel atual. Se alguma componente (r,g,b) der mais que 255, deixe-a em 255.
       			Pintar o pixel (P.x, P.y) com a cor obtida.
             */
-            // desenharPixel(x, y, 0);
+            desenharPixel(x, y, 0);
           }
         }
       }
@@ -105,6 +113,22 @@ function varrerTrianguloInferior(t, index) {
 
 function desenharObjeto() {
   for (var i = 0; i < triangulos2D.length; i++) {
-    triangulos2D[i].varredura(i);
+    var t = triangulos2D[i];
+
+    auxCtx.fillRect(t.p1.x, t.p1.y, 10, 10);
+    auxCtx.fillRect(t.p2.x, t.p2.y, 10, 10);
+    auxCtx.fillRect(t.p3.x, t.p3.y, 10, 10);
+    continue;
+
+    if (t.p2.y == t.p3.y) varrerTrianguloSuperior(t, i);
+    else if (t.p1.y == t.p2.y) varrerTrianguloInferior(t, i);
+    else { // Separa o triangulo em dois
+      var p4 = new Ponto2D((t.p1.x + ((t.p2.y-t.p1.y)/(t.p3.y-t.p1.y)) * (t.p3.x-t.p1.x)),t.p2.y);
+      var tSup = new Triangulo(t.p1, t.p2, p4);
+      var tInf = new Triangulo(t.p2, p4, t.p3);
+      varrerTrianguloSuperior(tSup, i);
+      varrerTrianguloInferior(tInf, i);
+    }
   }
+  // mainCtx.drawImage(auxCanvas, 0, 0);
 }

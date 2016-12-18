@@ -37,7 +37,7 @@ function loadIluminacao(data) {
 }
 
 function loadObjeto(data) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  mainCtx.clearRect(0, 0, canvas.width, canvas.height);
   var pontos3D = [];
   var pontos2D = [];
   var a;
@@ -73,15 +73,6 @@ function loadObjeto(data) {
     triangulos2D.push(t);
   }
   desenharObjeto();
-  // objeto3D = new Objeto(triangulos3D);
-  // objeto2D = new Objeto(triangulos2D);
-  // objeto3D.desenhar();
-  // objeto2D.desenhar();
-  // console.log("Objeto");console.log(objeto3D);console.log(objeto2D);
-  // console.log(pontos3D);
-  // console.log(pontos2D);
-  // console.log(triangulos3D);
-  // console.log(triangulos2D);
 }
 
 function loadPlano(data) {

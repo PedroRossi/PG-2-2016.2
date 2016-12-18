@@ -99,6 +99,7 @@ function Triangulo(p1, p2, p3) {
   this.p2 = p2;
   this.p3 = p3;
   this.normal = new Vetor(0, 0, 0);
+  this.ordenar();
 }
 Triangulo.prototype.ordenar = function () {
   var p1 = this.p1;
@@ -135,23 +136,6 @@ Triangulo.prototype.getTrianguloTela = function(camera) {
   return new Triangulo(this.p1.getPontoTela(camera),
                        this.p2.getPontoTela(camera),
                        this.p3.getPontoTela(camera));
-};
-Triangulo.prototype.varredura = function(index) {
-  /* at first sort the three vertices by y-coordinate ascending so v1 is the topmost vertice */
-  this.ordenar();
-  /* here we know that v1.y <= v2.y <= v3.y */
-  /* check for trivial case of bottom-flat triangle */
-  if (this.p2.y == this.p3.y) varrerTrianguloSuperior(this, index);
-  /* check for trivial case of top-flat triangle */
-  else if (this.p1.y == this.p2.y) varrerTrianguloInferior(this, index);
-  else {
-    /* general case - split the triangle in a topflat and bottom-flat one */
-    var p4 = new Ponto2D((this.p1.x + ((this.p2.y-this.p1.y)/(this.p3.y-this.p1.y)) * (this.p3.x-this.p1.x)),this.p2.y);
-    var tSup = new Triangulo(this.p1, this.p2, p4);
-    var tInf = new Triangulo(this.p2, p4, this.p3);
-    varrerTrianguloSuperior(tSup, index);
-    varrerTrianguloInferior(tInf, index);
-  }
 };
 Triangulo.prototype.getPonto3DBaricentrico = function(cb) {
   var a = this.p1;
