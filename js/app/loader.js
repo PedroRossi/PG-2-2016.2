@@ -1,9 +1,9 @@
-// document.getElementById('camera').disabled = false;
 document.getElementById('iluminacao').disabled = true;
 document.getElementById('objeto').disabled = true;
 document.getElementById('plano').disabled = true;
 
 function loadCamera(data) {
+  if(!iluminacao) document.getElementById('iluminacao').disabled = false;
   camera = {};
   var a;
   a = data[0].split(' ');
@@ -23,6 +23,7 @@ function loadCamera(data) {
 }
 
 function loadIluminacao(data) {
+  if(!objeto) document.getElementById('objeto').disabled = false;
   iluminacao = {};
   var a;
   a = data[0].split(' ');
@@ -44,6 +45,7 @@ function loadIluminacao(data) {
 }
 
 function loadObjeto(data) {
+  if(!plano) document.getElementById('plano').disabled = false;
   zBuffer = new Array(altura);
   for (var i = 0; i < zBuffer.length; i++) {
     zBuffer[i] = new Array(largura);

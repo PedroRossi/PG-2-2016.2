@@ -35,6 +35,7 @@ function getCoordenadasBaricentricas(x, y, index) {
 
 function desenharPixel(x, y, cor) {
   var str = "rgb("+cor.x+", "+cor.y+", "+cor.z+")";
+  // var str = "rgb("+100+", "+100+", "+100+")";
   ctx.fillStyle = str;
   ctx.fillRect(x,y,1,1);
 }
@@ -43,7 +44,6 @@ function avaliarPonto(x, y, index) {
   var cb = getCoordenadasBaricentricas(x, y, index);
   var pl = triangulos3D[index].getPonto3DBaricentrico(cb);
   var N, V, L, R, cor = new Vetor(0, 0, 0);
-  x = Math.round(x);
   if(pl.z < zBuffer[y][x]) {
     zBuffer[y][x] = pl.z;
     N = triangulos3D[index].getVetorBaricentrico(cb);

@@ -166,15 +166,6 @@ Camera.prototype.genAlfa = function() {
   this.alfa.push([this.n.x, this.n.y, this.n.z]);
 };
 
-function Objeto(triangulos) {
-  this.triangulos = triangulos;
-}
-Objeto.prototype.desenhar = function() {
-  this.triangulos.forEach(function(triangulo) {
-    triangulo.varredura();
-  });
-};
-
 function Iluminacao(pl, ka, ia, kd, od, ks, il, n) {
   this.pl = pl;
   this.ka = ka;
@@ -220,6 +211,8 @@ function Plano(p1, p2, p3, s){
   this.p2 = p2;
   this.p3 = p3;
   this.s = s;
+  this.vetorNormal = this.calcularVetorNormal();
+  this.d = this.calcularD();
 }
 Plano.prototype.calcularVetorNormal = function(){
   var v1 = new Vetor(this.p2.x - this.p1.x, this.p2.y - this.p1.y, this.p2.z - this.p1.z);
