@@ -20,9 +20,6 @@ function getCoordenadasBaricentricas(x, y, index) {
   alfa = solucao[0];
   beta = solucao[1];
   gama = solucao[2];
-  // alfa = Math.round(alfa*10)/10;
-  // beta = Math.round(beta*10)/10;
-  // gama = Math.round(gama*10)/10;
   var r = {
     alfa: alfa,
     beta: beta,
@@ -40,6 +37,11 @@ function desenharPixel(x, y, cor) {
 
 function varrerLinha(x1, x2, y, index) {
   var len = Math.ceil(Math.abs((x2)-(x1)));
+  if(x1>x2) {
+    var aux = x2;
+    x2 = x1;
+    x1 = aux;
+  }
   for (var i = 0; i <= len; i++) {
     var x = x1+i;
     var cb = getCoordenadasBaricentricas(x, y, index);
