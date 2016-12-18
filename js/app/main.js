@@ -1,4 +1,5 @@
 var camera, iluminacao, plano, largura = 640, altura = 480;
+var pontos3DMundo = [];
 var triangulos3D = [];
 var triangulos2D = [];
 var zBuffer;

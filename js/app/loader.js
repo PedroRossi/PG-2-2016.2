@@ -1,13 +1,9 @@
-document.getElementById('camera').disabled = false;
+// document.getElementById('camera').disabled = false;
 document.getElementById('iluminacao').disabled = true;
 document.getElementById('objeto').disabled = true;
-document.getElementById('plano').disabled = false;
-
+document.getElementById('plano').disabled = true;
 
 function loadCamera(data) {
-  document.getElementById('iluminacao').disabled = true;
-  document.getElementById('objeto').disabled = true;
-  document.getElementById('plano').disabled = false;
   camera = {};
   var a;
   a = data[0].split(' ');
@@ -27,8 +23,6 @@ function loadCamera(data) {
 }
 
 function loadIluminacao(data) {
-  document.getElementById('objeto').disabled = true;
-  document.getElementById('plano').disabled = true;
   iluminacao = {};
   var a;
   a = data[0].split(' ');
@@ -45,12 +39,11 @@ function loadIluminacao(data) {
   var n = data[7];
   iluminacao = new Iluminacao(pl, ka, ia, kd, od, ks, il, n);
   // console.log("Iluminacao");console.log(iluminacao);
-  iluminacao.pl.getPontoVista(camera);
+  iluminacao.pl = iluminacao.pl.getPontoVista(camera);
   document.getElementById('objeto').disabled = false;
 }
 
 function loadObjeto(data) {
-  document.getElementById('plano').disabled = true;
   zBuffer = new Array(altura);
   for (var i = 0; i < zBuffer.length; i++) {
     zBuffer[i] = new Array(largura);
@@ -59,6 +52,7 @@ function loadObjeto(data) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   var pontos3D = [];
   var pontos2D = [];
+  pontos3DMundo = [];
   triangulos3D = [];
   triangulos2D = [];
   var a;
@@ -69,6 +63,7 @@ function loadObjeto(data) {
   for (i = 1; i <= qntP; ++i) {
     a = data[i].split(' ');
     var p = new Ponto3D(a[0], a[1], a[2]);
+    pontos3DMundo.push(p);
     p = p.getPontoVista(camera);
     pontos3D.push(p);
   }
@@ -110,9 +105,8 @@ function loadPlano(data) {
   plano = new Plano(p1, p2, p3, s);
   var v1 = plano.calcularVetorNormal();
   var d = plano.calcularD();
-   console.log("Plano");console.log(plano);
-   console.log(v1); console.log(d);
-  document.getElementById('plano').disabled = false;
+  console.log("Plano");console.log(plano);
+  console.log(v1);console.log(d);
 }
 
 function handleFileSelect(evt) {
