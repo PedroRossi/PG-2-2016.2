@@ -91,6 +91,7 @@ function loadObjeto(data) {
     triangulos2D.push(t);
   }
   desenharObjeto();
+  document.getElementById('plano').disabled = false;
 }
 
 function loadPlano(data) {
