@@ -3,16 +3,15 @@ function Vetor(x, y, z) {
   this.y = y;
   this.z = z;
 }
-Vetor.prototype.norma = function()
-{
+Vetor.prototype.norma = function() {
   var n = this.produtoEscalar(this);
   var ret = Math.sqrt(n);
   return ret;
-}
-Vetor.prototype.calculaCosseno = function(v) {
+};
+Vetor.prototype.getCosseno = function(v) {
   var cos = (v.produtoEscalar(this))/(this.norma()*v.norma());
   return cos;
-}
+};
 Vetor.prototype.normalizar = function() {
   var sum = (this.x*this.x + this.y*this.y + this.z*this.z);
   if(!sum) return;
@@ -85,7 +84,7 @@ Ponto3D.prototype.getPontoTela = function(camera) {
   r.y = Math.round(r.y);
   r.normal = this.normal.clone();
   return r;
-}
+};
 Ponto3D.prototype.multiplicar = function(k) {
   return new Ponto3D(this.x*k, this.y*k, this.z*k);
 };
@@ -175,6 +174,22 @@ Camera.prototype.genAlfa = function() {
   this.alfa.push([this.v.x, this.v.y, this.v.z]);
   this.alfa.push([this.n.x, this.n.y, this.n.z]);
 };
+Camera.prototype.getPontoVista = function(p) {
+  var a = p.clone();
+  var b = a.sub(this.c);
+  var r = b.multiplicarMatrix(this.alfa);
+  return r;
+};
+Camera.prototype.getPontoTela = function(p) {
+  var x = (this.d/this.hx)*(p.x/p.z);
+  var y = (this.d/this.hy)*(p.y/p.z);
+  var a = new Ponto2D(x, y);
+  var r = new Ponto2D(((a.x + 1) * (largura / 2)), ((1 - a.y) * (altura / 2)));
+  r.x = Math.round(r.x);
+  r.y = Math.round(r.y);
+  r.normal = p.normal.clone();
+  return r;
+};
 
 function Iluminacao(pl, ka, ia, kd, od, ks, il, n) {
   this.pl = pl;
@@ -220,7 +235,7 @@ function Plano(p1, p2, p3, s){
   this.p2 = p2;
   this.p3 = p3;
   this.s = s;
-  this.vetorNormal = this.calcularVetorNormal();
+  this.normal = this.calcularNormal();
   this.d = this.calcularD();
 }
 Plano.prototype.calcularVetorNormal = function(){
@@ -229,7 +244,7 @@ Plano.prototype.calcularVetorNormal = function(){
   return v1.produtoVetorial(v2);
 };
 Plano.prototype.calcularD = function(){
-  var normal = this.calcularVetorNormal();
+  var normal = this.calcularNormal();
   var x = normal.x*this.p1.x;
   var y = normal.y*this.p1.y;
   var z = normal.z*this.p1.z;

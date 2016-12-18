@@ -50,32 +50,6 @@ function loadIluminacao(data) {
   document.getElementById('objeto').disabled = false;
 }
 
-function construirObjeto(pontos3D) {
-  // TODO
-  for(var j = 0; j < qntT; ++j, ++i) {
-    a = data[i].split(' ');
-    var t = new Triangulo(pontos3D[a[0]-1], pontos3D[a[1]-1], pontos3D[a[2]-1]);
-    t.calcularNormal();
-    var normal = t.normal;
-    pontos3D[a[0]-1].normal = pontos3D[a[0]-1].normal.add(normal);
-    pontos3D[a[1]-1].normal = pontos3D[a[1]-1].normal.add(normal);
-    pontos3D[a[2]-1].normal = pontos3D[a[2]-1].normal.add(normal);
-  }
-  for (var a = 0; a < pontos3D.length; a++) {
-    pontos3D[a].normal.normalizar();
-    pontos2D[a] = pontos3D[a].getPontoTela(camera);
-  }
-  i-=qntT;
-  for(var j = 0; j < triangulos3D.length; ++j, ++i) {
-    a = data[i].split(' ');
-    var t = new Triangulo(pontos3D[a[0]-1], pontos3D[a[1]-1], pontos3D[a[2]-1]);
-    t.calcularNormal();
-    triangulos3D[j]=(t);
-    t = new Triangulo(pontos2D[a[0]-1], pontos2D[a[1]-1], pontos2D[a[2]-1]);
-    triangulos2D[j]=(t);
-  }
-}
-
 function loadObjeto(data) {
   if(!plano) document.getElementById('plano').disabled = false;
   zBuffer = new Array(altura);
@@ -84,8 +58,8 @@ function loadObjeto(data) {
     for (var j = 0; j < zBuffer[i].length; j++) zBuffer[i][j] = Infinity;
   }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  var pontos3D = [];
-  var pontos2D = [];
+  var pontos3DVista = [];
+  var pontos2DTela = [];
   pontos3DMundo = [];
   triangulos3D = [];
   triangulos2D = [];
@@ -94,33 +68,41 @@ function loadObjeto(data) {
   var qntP = a[0];
   var qntT = a[1];
   var i;
+  centroide = new Ponto3D(0, 0, 0);
   for (i = 1; i <= qntP; ++i) {
     a = data[i].split(' ');
     var p = new Ponto3D(a[0], a[1], a[2]);
+    centroide.x+=p.x;
+    centroide.y+=p.y;
+    centroide.z+=p.z;
     pontos3DMundo.push(p);
-    p = p.getPontoVista(camera);
-    pontos3D.push(p);
+    p = camera.getPontoVista(p);
+    pontos3DVista.push(p);
   }
+  centroide.x/=qntP;
+  centroide.y/=qntP;
+  centroide.z/=qntP;
   for(var j = 0; j < qntT; ++j, ++i) {
     a = data[i].split(' ');
-    var t = new Triangulo(pontos3D[a[0]-1], pontos3D[a[1]-1], pontos3D[a[2]-1]);
+    triangulosRef.push([a[0],a[1],a[2]]);
+    var t = new Triangulo(pontos3DVista[a[0]-1], pontos3DVista[a[1]-1], pontos3DVista[a[2]-1]);
     t.calcularNormal();
     var normal = t.normal;
-    pontos3D[a[0]-1].normal = pontos3D[a[0]-1].normal.add(normal);
-    pontos3D[a[1]-1].normal = pontos3D[a[1]-1].normal.add(normal);
-    pontos3D[a[2]-1].normal = pontos3D[a[2]-1].normal.add(normal);
+    pontos3DVista[a[0]-1].normal = pontos3DVista[a[0]-1].normal.add(normal);
+    pontos3DVista[a[1]-1].normal = pontos3DVista[a[1]-1].normal.add(normal);
+    pontos3DVista[a[2]-1].normal = pontos3DVista[a[2]-1].normal.add(normal);
   }
-  for (var a = 0; a < pontos3D.length; a++) {
-    pontos3D[a].normal.normalizar();
-    pontos2D[a] = pontos3D[a].getPontoTela(camera);
+  for (var a = 0; a < pontos3DVista.length; a++) {
+    pontos3DVista[a].normal.normalizar();
+    pontos2DTela[a] = camera.getPontoTela(pontos3DVista[a]);
   }
   i-=qntT;
   for(var j = 0; j < qntT; ++j, ++i) {
     a = data[i].split(' ');
-    var t = new Triangulo(pontos3D[a[0]-1], pontos3D[a[1]-1], pontos3D[a[2]-1]);
+    var t = new Triangulo(pontos3DVista[a[0]-1], pontos3DVista[a[1]-1], pontos3DVista[a[2]-1]);
     t.calcularNormal();
     triangulos3D.push(t);
-    t = new Triangulo(pontos2D[a[0]-1], pontos2D[a[1]-1], pontos2D[a[2]-1]);
+    t = new Triangulo(pontos2DTela[a[0]-1], pontos2DTela[a[1]-1], pontos2DTela[a[2]-1]);
     triangulos2D.push(t);
   }
   desenharObjeto();
@@ -129,7 +111,7 @@ function loadObjeto(data) {
 
 function loadPlano(data) {
   var s = data[0];
-  var a;
+  var a;Vista
   a = data[1].split(' ');
   var p1 = new Ponto3D(a[0], a[1], a[2]);
   a = data[2].split(' ');
@@ -137,8 +119,7 @@ function loadPlano(data) {
   a = data[3].split(' ');
   var p3 = new Ponto3D(a[0], a[1], a[2]);
   plano = new Plano(p1, p2, p3, s);
-  //var v1 = plano.calcularVetorNormal();
-  //var d = plano.calcularD();
+  var sinalCentroide = plano.calcularSinal(centroide);
   //console.log("Plano");console.log(plano);
   //var ponto = new Ponto3D(1, 2, 1);
   //console.log(v1);console.log(d);
