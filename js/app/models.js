@@ -218,4 +218,20 @@ Iluminacao.prototype.calcularCor = function(p, L) {
   }
   l += this.ks*pe_rv*this.il;
   return l;
+};
+
+function Plano(p1, p2, p3, s){
+  this.p1 = p1;
+  this.p2 = p2;
+  this.p3 = p3;
+  this.s = s;
 }
+Plano.prototype.calcularVetorNormal = function(){
+  var v1 = new Vetor(this.p2.x - this.p1.x, this.p2.y - this.p1.y, this.p2.z - this.p1.z);
+  var v2 = new Vetor(this.p3.x - this.p1.x, this.p3.y - this.p1.y, this.p3.z - this.p1.z);
+  return v1.produtoVetorial(v2);
+};
+Plano.prototype.calcularD = function(){
+  var normal = calcularVetorNormal();
+  var d = this.s*(normal.x + normal.y + normal.z);
+};

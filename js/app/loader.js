@@ -12,7 +12,7 @@ function loadCamera(data) {
   var hx = a[1];
   var hy = a[2];
   camera = new Camera(c, n, v, d, hx, hy);
-  // console.log("Camera");console.log(camera);
+  console.log("Camera");console.log(camera);
   camera.genAlfa();
 }
 
@@ -76,7 +76,18 @@ function loadObjeto(data) {
 }
 
 function loadPlano(data) {
-  console.log(data);
+  plano = {};
+  var a;
+  a = data[0].split(' ');
+  var s = data[0];
+  a = data[1].split(' ');
+  var p1 = new Ponto3D(a[0], a[1], a[2]);
+  a = data[2].split(' ');
+  var p2 = new Ponto3D(a[0], a[1], a[2]);
+  a = data[3].split(' ');
+  var p3 = new Ponto3D(a[0], a[1], a[2]);
+  plano = new Plano(p1, p2, p3, s);
+  console.log("Plano");console.log(plano);
 }
 
 function handleFileSelect(evt) {
@@ -111,3 +122,4 @@ function handleFileSelect(evt) {
 document.getElementById('camera').addEventListener('change', handleFileSelect, false);
 document.getElementById('iluminacao').addEventListener('change', handleFileSelect, false);
 document.getElementById('objeto').addEventListener('change', handleFileSelect, false);
+document.getElementById('plano').addEventListener('change', handleFileSelect, false);
