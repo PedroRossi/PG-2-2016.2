@@ -7,6 +7,7 @@ Vetor.prototype.norma = function() {
   var n = this.produtoEscalar(this);
   var ret = Math.sqrt(n);
   return ret;
+
 };
 Vetor.prototype.getCosseno = function(v) {
   var cos = (v.produtoEscalar(this))/(this.norma()*v.norma());
@@ -193,6 +194,7 @@ Camera.prototype.getPontoTela = function(p) {
 
 function Iluminacao(pl, ka, ia, kd, od, ks, il, n) {
   this.pl = pl;
+  this.originalPl = pl;
   this.ka = ka;
   this.ia = ia;
   this.kd = kd;

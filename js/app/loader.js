@@ -20,9 +20,55 @@ function loadCamera(data) {
   // console.log("Camera");console.log(camera);
   camera.genAlfa();
   if(iluminacao) {
-    iluminacao.pl = iluminacao.pl.getPontoVista(camera);
+    iluminacao.pl = camera.getPontoVista(iluminacao.originalPl);
     if(objeto) {
-
+      zBuffer = new Array(altura);
+      for (var i = 0; i < zBuffer.length; i++) {
+        zBuffer[i] = new Array(largura);
+        for (var j = 0; j < zBuffer[i].length; j++) zBuffer[i][j] = Infinity;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var pontos3DVista = [];
+      var pontos2DTela = [];
+      if(plano) {
+        for (var i = 0; i < pontos3DMundo.length; i++) {
+          var s = plano.calcularSinal(pontos3DMundo[i]);
+          if(s != sinalCentroide) pontos3DMundo[i].invalido = true;
+          else pontos3DMundo[i].invalido = false;
+        }
+      }
+      for (var i = 0; i < pontos3DMundo.length; i++) {
+        var p = camera.getPontoVista(pontos3DMundo[i]);
+        pontos3DVista.push(p);
+        pontos2DTela.push(camera.getPontoTela(p));
+      }
+      for (var i = 0; i < triangulosRef.length; i++) {
+        var p = triangulosRef[i];
+        var t = new Triangulo(pontos3DVista[p[0]-1], pontos3DVista[p[1]-1], pontos3DVista[p[2]-1]);
+        t.calcularNormal();
+        var normal = t.normal;
+        pontos3DVista[p[0]-1].normal = pontos3DVista[p[0]-1].normal.add(normal);
+        pontos3DVista[p[1]-1].normal = pontos3DVista[p[1]-1].normal.add(normal);
+        pontos3DVista[p[2]-1].normal = pontos3DVista[p[2]-1].normal.add(normal);
+      }
+      triangulos3D = [];
+      triangulos2D = [];
+      for (var i = 0; i < triangulosRef.length; i++) {
+        var p = triangulosRef[i];
+        if(plano) {
+          var check = true;
+          for(var j = 0; j < p.length && check; j++) {
+            // Mudar o ! para ver o outro lado do plano
+            check = check && !pontos3DMundo[p[j]-1].invalido;
+          }
+          if(!check) continue;
+        }
+        var t = new Triangulo(pontos3DVista[p[0]-1], pontos3DVista[p[1]-1], pontos3DVista[p[2]-1]);
+        triangulos3D.push(t);
+        t = new Triangulo(pontos2DTela[p[0]-1], pontos2DTela[p[1]-1], pontos2DTela[p[2]-1]);
+        triangulos2D.push(t);
+      }
+      desenharObjeto();
     }
   }
   document.getElementById('iluminacao').disabled = false;
@@ -46,7 +92,7 @@ function loadIluminacao(data) {
   var n = data[7];
   iluminacao = new Iluminacao(pl, ka, ia, kd, od, ks, il, n);
   // console.log("Iluminacao");console.log(iluminacao);
-  iluminacao.pl = iluminacao.pl.getPontoVista(camera);
+  iluminacao.pl = iluminacao.originalPl.getPontoVista(camera);
   document.getElementById('objeto').disabled = false;
 }
 
@@ -156,7 +202,8 @@ function loadPlano(data) {
     var p = triangulosRef[i];
     var check = true;
     for(var j = 0; j < p.length && check; j++) {
-      if(pontos3DMundo[p[j]-1].invalido) check = false;
+      // Mudar o ! para ver o outro lado do plano
+      check = check && !pontos3DMundo[p[j]-1].invalido;
     }
     if(!check) continue;
     var t = new Triangulo(pontos3DVista[p[0]-1], pontos3DVista[p[1]-1], pontos3DVista[p[2]-1]);
@@ -164,8 +211,6 @@ function loadPlano(data) {
     t = new Triangulo(pontos2DTela[p[0]-1], pontos2DTela[p[1]-1], pontos2DTela[p[2]-1]);
     triangulos2D.push(t);
   }
-  // console.log(triangulos3D);
-  // console.log(triangulos2D);
   desenharObjeto();
 }
 

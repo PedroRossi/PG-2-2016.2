@@ -1,9 +1,7 @@
 # PG-2-2016.2
 Projeto 2 da cadeira de Processamento Gráfico, 2016.2 - CIn, UFPE
 
-**Corte por um plano**
-
-Objetivo:
+Objetivo: **Corte por um plano**
 
 Parte Geral: Implementar o método de visualização de objetos triangulados, através do algoritmo de conversão por varredura, com métodos de interpolação de Phong, com a visibilidade garantida pelo algoritmo do “z-buffer”.
 

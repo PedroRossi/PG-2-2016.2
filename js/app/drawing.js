@@ -43,6 +43,12 @@ function avaliarPonto(x, y, index) {
   var cb = getCoordenadasBaricentricas(x, y, index);
   var pl = triangulos3D[index].getPonto3DBaricentrico(cb);
   var N, V, L, R, cor;
+  // TODO testing
+  // if(plano) {
+  //   var sinalCentroide = plano.calcularSinal(centroide);
+  //   var s = plano.calcularSinal(new Ponto3D(pl.x, pl.y, pl.z));
+  //   if(s != sinalCentroide) return;
+  // }
   if(pl.z < zBuffer[y][x]) {
     zBuffer[y][x] = pl.z;
     N = triangulos3D[index].getVetorBaricentrico(cb);
@@ -51,7 +57,8 @@ function avaliarPonto(x, y, index) {
     V = new Vetor((-1)*pl.x, (-1)*pl.y, (-1)*pl.z);
     V.normalizar();
 
-    var c = iluminacao.pl.sub(pl);
+    var c = camera.getPontoVista(iluminacao.pl);
+    c = iluminacao.pl.sub(pl);
     L = new Vetor(c.x, c.y, c.z);
     L.normalizar();
 
@@ -62,7 +69,7 @@ function avaliarPonto(x, y, index) {
     }
     if(N.produtoEscalar(L)<0) {
       // nao possui componentes difusa nem especular.
-      cor = iluminacao.getCor(L, null, V, null, pl);
+      cor = iluminacao.getCor(L, null, V, null, pl, camera);
     } else {
       var k = 2*N.produtoEscalar(L);
       var a = N.clone();
@@ -70,9 +77,9 @@ function avaliarPonto(x, y, index) {
       R = a.sub(L);
       if(R.produtoEscalar(V)<0) {
         // nao possui componente especular.
-        cor = iluminacao.getCor(L, N, V, null, pl);
+        cor = iluminacao.getCor(L, N, V, null, pl, camera);
       } else {
-        cor = iluminacao.getCor(L, N, V, R, pl);
+        cor = iluminacao.getCor(L, N, V, R, pl, camera);
       }
     }
     desenharPixel(x, y, cor);
