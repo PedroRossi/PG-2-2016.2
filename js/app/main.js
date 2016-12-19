@@ -9,8 +9,13 @@ var triangulos2D = [];
 var triangulosRef = [];
 var zBuffer;
 
+window.onresize = window.onload = function(evt) {
+  largura = document.getElementById('main').offsetWidth;
+  altura = document.getElementById('main').offsetHeight - document.getElementById('form').offsetHeight - 10;
+  document.getElementById('canvas').width = largura;
+  document.getElementById('canvas').height = altura;
+};
+
 // CANVAS
-document.getElementById('canvas').width = largura;
-document.getElementById('canvas').height = altura;
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
