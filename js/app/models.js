@@ -238,7 +238,7 @@ function Plano(p1, p2, p3, s){
   this.normal = this.calcularNormal();
   this.d = this.calcularD();
 }
-Plano.prototype.calcularVetorNormal = function(){
+Plano.prototype.calcularNormal = function(){
   var v1 = new Vetor(this.p2.x - this.p1.x, this.p2.y - this.p1.y, this.p2.z - this.p1.z);
   var v2 = new Vetor(this.p3.x - this.p1.x, this.p3.y - this.p1.y, this.p3.z - this.p1.z);
   return v1.produtoVetorial(v2);
@@ -253,7 +253,7 @@ Plano.prototype.calcularD = function(){
 };
 Plano.prototype.calcularSinal = function(ponto){
   var saida = 0;
-  var aux = (this.vetorNormal.x*ponto.x) + (this.vetorNormal.y*ponto.y) + (this.vetorNormal.z*ponto.z) - this.d;
+  var aux = (this.normal.x*ponto.x) + (this.normal.y*ponto.y) + (this.normal.z*ponto.z) - this.d;
   if(aux > 0) saida = 1;
   else if(aux < 0) saida = -1;
   return saida;

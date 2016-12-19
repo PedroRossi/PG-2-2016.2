@@ -67,14 +67,17 @@ function loadObjeto(data) {
   a = data[0].split(' ');
   var qntP = a[0];
   var qntT = a[1];
-  var i;
+  var i, f = 1000000; //0000
   centroide = new Ponto3D(0, 0, 0);
   for (i = 1; i <= qntP; ++i) {
     a = data[i].split(' ');
     var p = new Ponto3D(a[0], a[1], a[2]);
-    centroide.x+=p.x;
-    centroide.y+=p.y;
-    centroide.z+=p.z;
+    centroide.x+=Number(p.x);
+    centroide.y+=Number(p.y);
+    centroide.z+=Number(p.z);
+    centroide.x = Math.round(centroide.x*f)/f;
+    centroide.y = Math.round(centroide.y*f)/f;
+    centroide.z = Math.round(centroide.z*f)/f;
     pontos3DMundo.push(p);
     p = camera.getPontoVista(p);
     pontos3DVista.push(p);
@@ -110,8 +113,14 @@ function loadObjeto(data) {
 }
 
 function loadPlano(data) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  zBuffer = new Array(altura);
+  for (var i = 0; i < zBuffer.length; i++) {
+    zBuffer[i] = new Array(largura);
+    for (var j = 0; j < zBuffer[i].length; j++) zBuffer[i][j] = Infinity;
+  }
   var s = data[0];
-  var a;Vista
+  var a;
   a = data[1].split(' ');
   var p1 = new Ponto3D(a[0], a[1], a[2]);
   a = data[2].split(' ');
@@ -120,10 +129,44 @@ function loadPlano(data) {
   var p3 = new Ponto3D(a[0], a[1], a[2]);
   plano = new Plano(p1, p2, p3, s);
   var sinalCentroide = plano.calcularSinal(centroide);
-  //console.log("Plano");console.log(plano);
-  //var ponto = new Ponto3D(1, 2, 1);
-  //console.log(v1);console.log(d);
-  //console.log(plano.calcularSinal(ponto));
+  var pontos3DVista = [];
+  var pontos2DTela = [];
+  for (var i = 0; i < pontos3DMundo.length; i++) {
+    var s = plano.calcularSinal(pontos3DMundo[i]);
+    if(s != sinalCentroide) pontos3DMundo[i].invalido = true;
+    else pontos3DMundo[i].invalido = false;
+  }
+  for (var i = 0; i < pontos3DMundo.length; i++) {
+    var p = camera.getPontoVista(pontos3DMundo[i]);
+    pontos3DVista.push(p);
+    pontos2DTela.push(camera.getPontoTela(p));
+  }
+  for (var i = 0; i < triangulosRef.length; i++) {
+    var p = triangulosRef[i];
+    var t = new Triangulo(pontos3DVista[p[0]-1], pontos3DVista[p[1]-1], pontos3DVista[p[2]-1]);
+    t.calcularNormal();
+    var normal = t.normal;
+    pontos3DVista[p[0]-1].normal = pontos3DVista[p[0]-1].normal.add(normal);
+    pontos3DVista[p[1]-1].normal = pontos3DVista[p[1]-1].normal.add(normal);
+    pontos3DVista[p[2]-1].normal = pontos3DVista[p[2]-1].normal.add(normal);
+  }
+  triangulos3D = [];
+  triangulos2D = [];
+  for (var i = 0; i < triangulosRef.length; i++) {
+    var p = triangulosRef[i];
+    var check = true;
+    for(var j = 0; j < p.length && check; j++) {
+      if(pontos3DMundo[p[j]-1].invalido) check = false;
+    }
+    if(!check) continue;
+    var t = new Triangulo(pontos3DVista[p[0]-1], pontos3DVista[p[1]-1], pontos3DVista[p[2]-1]);
+    triangulos3D.push(t);
+    t = new Triangulo(pontos2DTela[p[0]-1], pontos2DTela[p[1]-1], pontos2DTela[p[2]-1]);
+    triangulos2D.push(t);
+  }
+  // console.log(triangulos3D);
+  // console.log(triangulos2D);
+  desenharObjeto();
 }
 
 function handleFileSelect(evt) {
