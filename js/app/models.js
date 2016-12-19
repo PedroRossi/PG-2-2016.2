@@ -254,9 +254,9 @@ Plano.prototype.calcularD = function(){
   return d;
 };
 Plano.prototype.calcularSinal = function(ponto){
-  var saida = 0;
+  var saida = -1;
   var aux = (this.normal.x*ponto.x) + (this.normal.y*ponto.y) + (this.normal.z*ponto.z) - this.d;
   if(aux > 0) saida = 1;
-  else if(aux < 0) saida = -1;
+  // else if(aux < 0) saida = -1;
   return saida;
 }
