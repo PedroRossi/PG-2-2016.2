@@ -1,4 +1,8 @@
-var camera, iluminacao, centroide, plano, largura = 640, altura = 480;
+var camera, iluminacao, centroide, plano;
+var largura = document.getElementById('main').offsetWidth;
+var altura = document.getElementById('main').offsetHeight - document.getElementById('form').offsetHeight - 10;
+largura = Math.trunc(largura/10)*10;
+altura = Math.trunc(altura/10)*10;
 var pontos3DMundo = [];
 var triangulos3D = [];
 var triangulos2D = [];
